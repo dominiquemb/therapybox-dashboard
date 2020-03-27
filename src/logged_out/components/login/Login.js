@@ -5,7 +5,6 @@ import { withRouter } from "react-router-dom";
 import {
   TextField,
   Button,
-  Checkbox,
   Typography,
   FormControlLabel,
   withStyles,
@@ -37,6 +36,7 @@ const styles = theme => ({
       marginTop: theme.spacing(3),
     },
     buttonContainer: {
+      marginTop: 100,
       display: 'flex',
       justifyContent: 'center',
     },
@@ -54,22 +54,24 @@ const styles = theme => ({
         color: '#000000',
       },
     },
+    footer: {
+        padding: 50,
+        fontSize: 23,
+        width: '100%',
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'center',
+    },
 });
 
-const fileDropStyles = {
-  fileContainer: {
-    border: '3px solid #ffe65e',
-    minHeight: 160,
-    width: 310,
-    backgroundColor: 'rgba(112,130,160,0.6)',
+const SignupLink = withStyles({
+  root: {
+      color: '#ffe65e',
   },
-  button: {
-    height: '100%',
-    width: '100%',
-    fontSize: '22px',
-    backgroundColor: 'transparent',
-  },
-}
+})(Link);
 
 const CustomH3 = withStyles({
   root: {
@@ -108,7 +110,7 @@ const CustomGridItem = withStyles({
   },
 })(Grid);
 
-class Signup extends PureComponent {
+class Login extends PureComponent {
   state = { 
     loading: false,
     files: [],
@@ -118,33 +120,34 @@ class Signup extends PureComponent {
 
   componentDidMount() {
     const { selectTab } = this.props;
-    selectTab('Register');
+    selectTab('Login');
   }
 
-  handleSave(files, fileDataURLs) {
-    console.log(files);
+  login = () => {
+    const { setStatus, history } = this.props;
     this.setState({
-        files, 
-        fileDataURLs,
-        uploadDialogOpen: false
+      loading: true
     });
-  }
-
-  register = () => {
-    const { setStatus } = this.props;
-    if (!this.registerTermsCheckbox.checked) {
-      this.setState({ termsOfServiceError: true });
-      return;
-    }
-    if (this.registerPassword.value !== this.registerPasswordRepeat.value) {
-      setStatus("passwordsDontMatch");
-      return;
-    }
     setStatus(null);
-    this.setState({ loading: true });
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 1500);
+    if (this.loginEmail.value !== "test@web.com") {
+      setTimeout(() => {
+        setStatus("invalidEmail");
+        this.setState({
+          loading: false
+        });
+      }, 1500);
+    } else if (this.loginPassword.value !== "test") {
+      setTimeout(() => {
+        setStatus("invalidPassword");
+        this.setState({
+          loading: false
+        });
+      }, 1500);
+    } else {
+      setTimeout(() => {
+        history.push("/c/dashboard");
+      }, 150);
+    }
   };
 
   render() {
@@ -181,19 +184,6 @@ class Signup extends PureComponent {
                 <CustomTextField
                   required
                   fullWidth
-                  id="email"
-                  label="Email"
-                  inputRef={node => {
-                    this.registerEmail = node;
-                  }}
-                  name="email"
-                  autoComplete="email"
-                />
-              </CustomGridItem>
-              <CustomGridItem item xs={12} sm={6}>
-                <CustomTextField
-                  required
-                  fullWidth
                   name="password"
                   label="Password"
                   inputRef={node => {
@@ -204,32 +194,6 @@ class Signup extends PureComponent {
                   autoComplete="current-password"
                 />
               </CustomGridItem>
-              <CustomGridItem item xs={12} sm={6}>
-                <CustomTextField
-                  required
-                  fullWidth
-                  name="repeatpassword"
-                  label="Confirm password"
-                  inputRef={node => {
-                    this.registerPasswordRepeat = node;
-                  }}
-                  type="password"
-                  id="repeatpassword"
-                />
-              </CustomGridItem>
-              <CustomGridItem item xs={12}>
-                <ImageUploader
-                    withIcon={false}
-                    withPreview={true}
-                    buttonStyles={fileDropStyles.button}
-                    fileContainerStyle={fileDropStyles.fileContainer}
-                    withLabel={false}
-                    buttonText='Add picture'
-                    onChange={this.handleSave.bind(this)}
-                    imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                    maxFileSize={5242880}
-                />
-              </CustomGridItem>
             </Grid>
             <div className={classes.buttonContainer}>
               <Button
@@ -237,17 +201,26 @@ class Signup extends PureComponent {
                 color="primary"
                 className={classes.submit}
               >
-                Register
+                Login
               </Button>
             </div>
           </form>
         </div>
+        <footer className={classes.footer}>
+            {"New to the Hackathon?"}
+            &nbsp;
+            <SignupLink 
+                href="/signup"
+            >
+                {"Sign up"}
+            </SignupLink>
+        </footer>
       </Container>
     );
   }
 }
 
-Signup.propTypes = {
+Login.propTypes = {
   classes: PropTypes.object.isRequired,
   selectTab: PropTypes.func.isRequired,
   setStatus: PropTypes.func.isRequired,
@@ -255,4 +228,4 @@ Signup.propTypes = {
   status: PropTypes.string
 };
 
-export default withRouter(withStyles(styles)(Signup));
+export default withRouter(withStyles(styles)(Login));

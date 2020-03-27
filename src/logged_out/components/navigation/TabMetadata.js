@@ -2,8 +2,8 @@ const tabMetadata = {
     "Home": {
         title: "Homepage",
     },
-    "Blog": {
-        title: "Blog",
+    "Login": {
+        title: "Login",
     },
     "Register": {
         title: "Register",
