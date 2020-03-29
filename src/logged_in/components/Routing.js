@@ -3,9 +3,10 @@ import PropTypes from "prop-types";
 import { Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
 import Dashboard from "./dashboard/Dashboard";
+import Home from "./home/Home.js";
 import Posts from "./posts/Posts";
 import Subscription from "./subscription/Subscription";
-import PropsRoute from "../../shared/components/PropsRoute";
+import PrivateRoute from "../../shared/components/PrivateRoute";
 
 const styles = theme => ({
   wrapper: {
@@ -60,6 +61,7 @@ function Routing(props) {
     statistics,
     targets,
     isAccountActivated,
+    selectTab,
     selectDashboard,
     selectPosts,
     selectSubscription,
@@ -68,38 +70,25 @@ function Routing(props) {
   return (
     <div className={classes.wrapper}>
       <Switch>
-        <PropsRoute
-          path="/c/posts"
-          component={Posts}
-          EmojiTextArea={EmojiTextArea}
-          ImageCropper={ImageCropper}
-          Dropzone={Dropzone}
-          DateTimePicker={DateTimePicker}
-          pushMessageToSnackbar={pushMessageToSnackbar}
-          posts={posts}
-          selectPosts={selectPosts}
+        <PrivateRoute
+          path="/c/home"
+          component={Home}
+          selectTab={selectTab}
         />
-        <PropsRoute
-          path="/c/subscription"
-          component={Subscription}
-          transactions={transactions}
-          pushMessageToSnackbar={pushMessageToSnackbar}
-          selectSubscription={selectSubscription}
-          openAddBalanceDialog={openAddBalanceDialog}
-        />
-        <PropsRoute
+        <PrivateRoute
           path=""
-          component={Dashboard}
-          handleNumberChange={handleNumberChange}
-          handleSwitchToggle={handleSwitchToggle}
-          handleSelectChange={handleSelectChange}
-          toggleAccountActivation={toggleAccountActivation}
-          pushMessageToSnackbar={pushMessageToSnackbar}
-          CardChart={CardChart}
-          statistics={statistics}
-          targets={targets}
-          isAccountActivated={isAccountActivated}
-          selectDashboard={selectDashboard}
+          component={Home}
+          selectTab={selectTab}
+          // handleNumberChange={handleNumberChange}
+          // handleSwitchToggle={handleSwitchToggle}
+          // handleSelectChange={handleSelectChange}
+          // toggleAccountActivation={toggleAccountActivation}
+          // pushMessageToSnackbar={pushMessageToSnackbar}
+          // CardChart={CardChart}
+          // statistics={statistics}
+          // targets={targets}
+          // isAccountActivated={isAccountActivated}
+          // selectDashboard={selectDashboard}
         />
       </Switch>
     </div>
@@ -123,6 +112,7 @@ Routing.propTypes = {
   statistics: PropTypes.object.isRequired,
   targets: PropTypes.arrayOf(PropTypes.object).isRequired,
   isAccountActivated: PropTypes.bool.isRequired,
+  selectTab: PropTypes.func.isRequired,
   selectDashboard: PropTypes.func.isRequired,
   selectPosts: PropTypes.func.isRequired,
   selectSubscription: PropTypes.func.isRequired,

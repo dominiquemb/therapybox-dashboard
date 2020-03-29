@@ -23,7 +23,7 @@ function Routing(props) {
         component={Login}
         selectTab={selectTab}
       />
-      <PropsRoute path="/" component={Home} selectTab={selectTab} />
+      <PropsRoute path="/" component={Login} selectTab={selectTab} />
     </Switch>
   );
 }

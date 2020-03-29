@@ -17,6 +17,7 @@ import {
   Container,
 } from "@material-ui/core";
 import ImageUploader from 'react-images-upload';
+import authenticationService from '../../../shared/services/authentication.service';
 import HighlightedInformation from "../../../shared/components/HighlightedInformation";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -109,39 +110,89 @@ const CustomGridItem = withStyles({
 })(Grid);
 
 class Signup extends PureComponent {
-  state = { 
-    loading: false,
-    files: [],
-    fileDataURLs: [],
-    uploadDialogOpen: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = { 
+      loading: false,
+      files: [],
+      errorMessage: false,
+      fileDataURLs: [],
+      uploadDialogOpen: false,
+    };
+
+    // redirect to home if already logged in
+    if (authenticationService.currentUserValue) { 
+      this.props.history.push('/c/home');
+    }
+  }
 
   componentDidMount() {
     const { selectTab } = this.props;
     selectTab('Register');
   }
 
-  handleSave(files, fileDataURLs) {
-    console.log(files);
+  toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+  async handleSave(files, fileDataURLs) {
+    // let newFiles = [];
+    // await Promise.all(files.map(async (file) => {
+    //     let newObj = {};
+    //     newObj.name = file.name;
+    //     newObj.type = file.type;
+    //     this.toBase64(file).then(result => {
+    //       newObj.base64 = result; 
+    //     });
+
+    //     newFiles.push(newObj);
+    //     return newObj;
+    //   })
+    // );
+
     this.setState({
-        files, 
+        files,
         fileDataURLs,
         uploadDialogOpen: false
     });
   }
 
-  register = () => {
-    const { setStatus } = this.props;
-    if (!this.registerTermsCheckbox.checked) {
-      this.setState({ termsOfServiceError: true });
-      return;
-    }
+  register = (evt) => {
+    evt.preventDefault();
+    const { setStatus, history } = this.props;
+    let { errorMessage, files } = this.state;
+
     if (this.registerPassword.value !== this.registerPasswordRepeat.value) {
-      setStatus("passwordsDontMatch");
+      //setStatus("passwordsDontMatch");
+      errorMessage = "Passwords don't match";
       return;
     }
-    setStatus(null);
+
+    //setStatus(null);
     this.setState({ loading: true });
+
+    authenticationService.register({
+      firstName: this.registerFirstName.value,
+      lastName: this.registerLastName.value,
+      username: this.registerUsername.value,
+      email: this.registerEmail.value,
+      images: files,
+      password: this.registerPassword.value,
+    })
+    .then(
+        user => {
+            const { from } = this.props.location.state || { from: { pathname: "/c/home" } };
+            history.push(from);
+        },
+        error => {
+            //setSubmitting(false);
+            //setStatus(error);
+            errorMessage = error;
+        }
+    );
     setTimeout(() => {
       this.setState({ loading: false });
     }, 1500);
@@ -154,7 +205,7 @@ class Signup extends PureComponent {
       status,
       setStatus
     } = this.props;
-    const { loading } = this.state;
+    const { loading, errorMessage } = this.state;
     return (
         <Container component="main" maxWidth="md">
         <CssBaseline />
@@ -164,6 +215,32 @@ class Signup extends PureComponent {
           </CustomH3>
           <form className={classes.form} onSubmit={this.register} noValidate>
             <Grid container spacing={10}>
+            <CustomGridItem item xs={12} sm={6}>
+                <CustomTextField
+                  required
+                  fullWidth
+                  id="first_name"
+                  label="First name"
+                  inputRef={node => {
+                    this.registerFirstName = node;
+                  }}
+                  name="firstName"
+                  autoComplete="firstName"
+                />
+              </CustomGridItem>
+              <CustomGridItem item xs={12} sm={6}>
+                <CustomTextField
+                  required
+                  fullWidth
+                  id="last_name"
+                  label="Last name"
+                  inputRef={node => {
+                    this.registerLastName = node;
+                  }}
+                  name="lastName"
+                  autoComplete="lastName"
+                />
+              </CustomGridItem>
               <CustomGridItem item xs={12} sm={6}>
                 <CustomTextField
                   required
@@ -239,6 +316,9 @@ class Signup extends PureComponent {
               >
                 Register
               </Button>
+              {errorMessage &&
+              <div className={'alert alert-danger'}>{errorMessage}</div>
+            }
             </div>
           </form>
         </div>

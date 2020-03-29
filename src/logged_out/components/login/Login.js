@@ -1,4 +1,6 @@
 import React, { PureComponent, Fragment } from "react";
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import { withRouter } from "react-router-dom";
@@ -15,7 +17,7 @@ import {
   Box,
   Container,
 } from "@material-ui/core";
-import ImageUploader from 'react-images-upload';
+import authenticationService from '../../../shared/services/authentication.service';
 import HighlightedInformation from "../../../shared/components/HighlightedInformation";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -111,43 +113,69 @@ const CustomGridItem = withStyles({
 })(Grid);
 
 class Login extends PureComponent {
-  state = { 
-    loading: false,
-    files: [],
-    fileDataURLs: [],
-    uploadDialogOpen: false,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = { 
+      loading: false,
+      errorMessage: false,
+      files: [],
+      fileDataURLs: [],
+      uploadDialogOpen: false,
+    };
+
+    // redirect to home if already logged in
+    if (authenticationService.currentUserValue) { 
+      this.props.history.push('/c/home');
+    }
+  }
 
   componentDidMount() {
     const { selectTab } = this.props;
     selectTab('Login');
   }
 
-  login = () => {
+  login = (evt) => {
+    evt.preventDefault();
+    
     const { setStatus, history } = this.props;
+    let { errorMessage } = this.state;
+
     this.setState({
       loading: true
     });
-    setStatus(null);
-    if (this.loginEmail.value !== "test@web.com") {
-      setTimeout(() => {
-        setStatus("invalidEmail");
-        this.setState({
-          loading: false
-        });
-      }, 1500);
-    } else if (this.loginPassword.value !== "test") {
-      setTimeout(() => {
-        setStatus("invalidPassword");
-        this.setState({
-          loading: false
-        });
-      }, 1500);
-    } else {
-      setTimeout(() => {
-        history.push("/c/dashboard");
-      }, 150);
-    }
+    //setStatus(null);
+    authenticationService.login(this.loginUsername.value, this.loginPassword.value)
+      .then(
+          user => {
+              const { from } = this.props.location.state || { from: { pathname: "/c/home" } };
+              history.push(from);
+          },
+          error => {
+              //setSubmitting(false);
+              //setStatus(error);
+              errorMessage = error;
+          }
+      );
+    // if (this.loginUsername.value !== "test@web.com") {
+    //   setTimeout(() => {
+    //     setStatus("invalidEmail");
+    //     this.setState({
+    //       loading: false
+    //     });
+    //   }, 1500);
+    // } else if (this.loginPassword.value !== "test") {
+    //   setTimeout(() => {
+    //     setStatus("invalidPassword");
+    //     this.setState({
+    //       loading: false
+    //     });
+    //   }, 1500);
+    // } else {
+    //   setTimeout(() => {
+    //     history.push("/c/dashboard");
+    //   }, 150);
+    // }
   };
 
   render() {
@@ -157,7 +185,8 @@ class Login extends PureComponent {
       status,
       setStatus
     } = this.props;
-    const { loading } = this.state;
+    const { loading, errorMessage } = this.state;
+    
     return (
         <Container component="main" maxWidth="md">
         <CssBaseline />
@@ -165,7 +194,67 @@ class Login extends PureComponent {
           <CustomH3 component="h1" variant="h2">
             Hackathon
           </CustomH3>
-          <form className={classes.form} onSubmit={this.register} noValidate>
+          
+          {/* <Formik
+            initialValues={{
+              username: '',
+              password: ''
+            }}
+            validationSchema={Yup.object().shape({
+              username: Yup.string().required('Username is required'),
+              password: Yup.string().required('Password is required')
+            })}
+            onSubmit={({ username, password }, { setStatus, setSubmitting }) => {
+              console.log('????');
+              setStatus();
+              authenticationService.login(username, password)
+                  .then(
+                      user => {
+                          //const { from } = this.props.location.state || { from: { pathname: "/" } };
+                          this.props.history.push("/c/home");
+                      },
+                      error => {
+                          setSubmitting(false);
+                          setStatus(error);
+                      }
+                  );
+            }}
+            >
+              {formik => (
+              <form onSubmit={formik.handleSubmit}>
+              <Grid container spacing={10}>
+                <CustomGridItem item xs={12} sm={6}>
+                <label htmlFor="username">Username</label>
+          <input id="username" {...formik.getFieldProps('username')} />
+          {formik.touched.username && formik.errors.username ? (
+            <div>{formik.errors.username}</div>
+          ) : null}
+          <label htmlFor="password">Password</label>
+          <input id="password" {...formik.getFieldProps('password')} />
+          {formik.touched.password && formik.errors.password ? (
+            <div>{formik.errors.password}</div>
+          ) : null}
+                </CustomGridItem>
+                <CustomGridItem item xs={12} sm={6}>
+                </CustomGridItem>
+              </Grid>
+              <div className={classes.buttonContainer}>
+                <Button
+                  type="submit"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  Login
+                </Button>
+              </div>
+              { status &&
+                <div className={'alert alert-danger'}>{status}</div>
+              }
+              </form>
+            )}
+          </Formik> */}
+
+          <form className={classes.form} onSubmit={this.login} noValidate>
             <Grid container spacing={10}>
               <CustomGridItem item xs={12} sm={6}>
                 <CustomTextField
@@ -174,7 +263,7 @@ class Login extends PureComponent {
                   id="username"
                   label="Username"
                   inputRef={node => {
-                    this.registerUsername = node;
+                    this.loginUsername = node;
                   }}
                   name="username"
                   autoComplete="username"
@@ -187,7 +276,7 @@ class Login extends PureComponent {
                   name="password"
                   label="Password"
                   inputRef={node => {
-                    this.registerPassword = node;
+                    this.loginPassword = node;
                   }}
                   type="password"
                   id="password"
@@ -204,6 +293,9 @@ class Login extends PureComponent {
                 Login
               </Button>
             </div>
+            {errorMessage &&
+              <div className={'alert alert-danger'}>{errorMessage}</div>
+            }
           </form>
         </div>
         <footer className={classes.footer}>

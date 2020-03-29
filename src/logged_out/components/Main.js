@@ -18,7 +18,6 @@ AOS.init({ once: true });
 const styles = theme => ({
   wrapper: {
     'background': `url(${Background})`,
-    //'backgroundColor': theme.palette.common.white,
     'overflowX': "hidden",
     'height': '100vh',
     '-webkit-background-size': 'cover',

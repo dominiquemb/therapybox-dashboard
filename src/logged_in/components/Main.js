@@ -4,15 +4,24 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core";
 import Routing from "./Routing";
 import NavBar from "./navigation/NavBar";
+import TabMetadata from "./navigation/TabMetadata";
 import ConsecutiveSnackbarMessages from "../../shared/components/ConsecutiveSnackbarMessages";
 import smoothScrollTop from "../../shared/functions/smoothScrollTop";
 import persons from "../dummy_data/persons";
 import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
+import Background from "../../assets/background1.png";
 
 const styles = theme => ({
   main: {
-    marginLeft: theme.spacing(9),
-    transition: theme.transitions.create(["width", "margin"], {
+    'background': `url(${Background})`,
+    'overflowX': "hidden",
+    'height': '100vh',
+    '-webkit-background-size': 'cover',
+    '-moz-background-size': 'cover',
+    '-o-background-size': 'cover',
+    'background-size': 'cover',
+    // 'marginLeft': theme.spacing(9),
+    'transition': theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
@@ -257,6 +266,13 @@ class Main extends PureComponent {
     }
   };
 
+  selectPage = (tab) => {
+    smoothScrollTop();
+    const { title } = TabMetadata[tab];
+    document.title = title;
+    this.setState({ selectedTab: tab });
+  };
+
   selectPosts = () => {
     smoothScrollTop();
     document.title = "WaVer - Posts";
@@ -321,11 +337,11 @@ class Main extends PureComponent {
           onClose={this.closeAddBalanceDialog}
           onSuccess={this.onPaymentSuccess}
         />
-        <NavBar
+        {/* <NavBar
           selectedTab={selectedTab}
           messages={messages}
           openAddBalanceDialog={this.openAddBalanceDialog}
-        />
+        /> */}
         <ConsecutiveSnackbarMessages
           getPushMessageFromChild={this.getPushMessageFromChild}
         />
@@ -346,6 +362,7 @@ class Main extends PureComponent {
             statistics={statistics}
             posts={posts}
             targets={targets}
+            selectTab={this.selectPage}
             selectDashboard={this.selectDashboard}
             selectPosts={this.selectPosts}
             selectSubscription={this.selectSubscription}
