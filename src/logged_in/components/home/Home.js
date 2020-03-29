@@ -24,6 +24,12 @@ const styles = theme => ({
     minHeight: "60vh",
     marginTop: 50,
   },
+  photo: {
+    maxWidth: '100%',
+    maxHeight: '100%',
+    width: 'auto',
+    height: 'auto',
+  },
   noDecoration: {
     textDecoration: "none !important"
   },
@@ -45,6 +51,20 @@ const CustomCard = withStyles({
     }
 })(Card);
 
+const PhotoCard = withStyles({
+    root: {
+        height: '100%',
+        width: '100%',
+    }
+})(Card);
+
+const PhotoCardContent = withStyles({
+  root: {
+      display: 'flex',
+      justifyContent: 'center',
+  }
+})(CardContent);
+
 const CustomLink = withStyles({
     root: {
         '&:hover': {
@@ -65,6 +85,9 @@ class Home extends PureComponent {
   state = {
     currentUser: authenticationService.currentUserValue,
     userFromApi: null,
+    images: [],
+    imagePreviews: [],
+    tasks: [],
     widgets: [
         {
             id: 'weather',
@@ -75,25 +98,25 @@ class Home extends PureComponent {
             id: 'news',
             title: 'News',
             api: '',
-            expandedUrl: '/news'
+            expandedUrl: '/c/news'
         },
         {
             id: 'sport',
             title: 'Sport',
             api: '',
-            expandedUrl: '/sport'
+            expandedUrl: '/c/sport'
         },
         {
             id: 'photos',
             title: 'Photos',
             api: '',
-            expandedUrl: '/photos'
+            expandedUrl: '/c/photos'
         },
         {
             id: 'tasks',
             title: 'Tasks',
             api: '',
-            expandedUrl: '/tasks'
+            expandedUrl: '/c/tasks'
         },
         {
             id: 'clothes',
@@ -111,6 +134,30 @@ class Home extends PureComponent {
     selectTab('Home');
 
     userService.getById(currentUser.id).then(userFromApi => this.setState({ userFromApi }));
+    userService.getImages(currentUser.id).then(images => {
+      let imagesCopy = images.slice();
+      let imagePreviews = imagesCopy.splice(0,4);
+      this.setState({ images, imagePreviews });
+    });
+    userService.getTasks(currentUser.id).then(tasks => this.setState({ tasks }));
+  }
+
+  getPhotosWidget = () => {
+    const { imagePreviews } = this.state;
+    const { classes } = this.props;
+    return (
+      <Grid container spacing={2} alignItems="stretch">
+        { imagePreviews.map(image => (
+        <Grid key={image.id} item xs={12} sm={6}>
+          <PhotoCard>
+            <PhotoCardContent>
+              <img src={image.pic} className={classes.photo} alt={image.name} />
+            </PhotoCardContent>
+          </PhotoCard>
+        </Grid>
+        ))}
+      </Grid>
+    );
   }
 
   getWeatherWidget = () => {
@@ -171,6 +218,9 @@ class Home extends PureComponent {
             break;
         case 'news': 
             html = 'News';
+            break;
+        case 'photos':
+            html = this.getPhotosWidget();
             break;
         default: 
             html = '';

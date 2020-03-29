@@ -110,3 +110,6 @@ build/
 package-lock.json
 yarn.lock
 
+public/assets/user_pics/*
+!public/assets/user_pics/.gitkeep
+

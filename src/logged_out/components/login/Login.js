@@ -138,7 +138,7 @@ class Login extends PureComponent {
   login = (evt) => {
     evt.preventDefault();
     
-    const { setStatus, history } = this.props;
+    const { history } = this.props;
     let { errorMessage } = this.state;
 
     this.setState({
@@ -154,28 +154,9 @@ class Login extends PureComponent {
           error => {
               //setSubmitting(false);
               //setStatus(error);
-              errorMessage = error;
+              this.setState({ errorMessage });
           }
       );
-    // if (this.loginUsername.value !== "test@web.com") {
-    //   setTimeout(() => {
-    //     setStatus("invalidEmail");
-    //     this.setState({
-    //       loading: false
-    //     });
-    //   }, 1500);
-    // } else if (this.loginPassword.value !== "test") {
-    //   setTimeout(() => {
-    //     setStatus("invalidPassword");
-    //     this.setState({
-    //       loading: false
-    //     });
-    //   }, 1500);
-    // } else {
-    //   setTimeout(() => {
-    //     history.push("/c/dashboard");
-    //   }, 150);
-    // }
   };
 
   render() {

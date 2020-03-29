@@ -116,7 +116,6 @@ class Signup extends PureComponent {
       loading: false,
       files: [],
       errorMessage: false,
-      fileDataURLs: [],
       uploadDialogOpen: false,
     };
 
@@ -131,43 +130,20 @@ class Signup extends PureComponent {
     selectTab('Register');
   }
 
-  toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-
   async handleSave(files, fileDataURLs) {
-    // let newFiles = [];
-    // await Promise.all(files.map(async (file) => {
-    //     let newObj = {};
-    //     newObj.name = file.name;
-    //     newObj.type = file.type;
-    //     this.toBase64(file).then(result => {
-    //       newObj.base64 = result; 
-    //     });
-
-    //     newFiles.push(newObj);
-    //     return newObj;
-    //   })
-    // );
-
     this.setState({
-        files,
-        fileDataURLs,
-        uploadDialogOpen: false
+        files
     });
   }
 
   register = (evt) => {
     evt.preventDefault();
-    const { setStatus, history } = this.props;
+    const { history } = this.props;
     let { errorMessage, files } = this.state;
 
     if (this.registerPassword.value !== this.registerPasswordRepeat.value) {
       //setStatus("passwordsDontMatch");
-      errorMessage = "Passwords don't match";
+      this.setState({ errorMessage: "Passwords don't match" });
       return;
     }
 
@@ -185,17 +161,15 @@ class Signup extends PureComponent {
     .then(
         user => {
             const { from } = this.props.location.state || { from: { pathname: "/c/home" } };
+            this.setState({ loading: false });
             history.push(from);
         },
         error => {
             //setSubmitting(false);
             //setStatus(error);
-            errorMessage = error;
+            this.setState({ errorMessage });
         }
     );
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 1500);
   };
 
   render() {
