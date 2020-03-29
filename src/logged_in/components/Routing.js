@@ -5,6 +5,7 @@ import { withStyles } from "@material-ui/core";
 import Dashboard from "./dashboard/Dashboard";
 import Home from "./home/Home.js";
 import Photos from "./photos/Photos";
+import Tasks from "./tasks/Tasks";
 import Posts from "./posts/Posts";
 import Subscription from "./subscription/Subscription";
 import PrivateRoute from "../../shared/components/PrivateRoute";
@@ -79,6 +80,11 @@ function Routing(props) {
         <PrivateRoute
           path="/c/photos"
           component={Photos}
+          selectTab={selectTab}
+        />
+        <PrivateRoute
+          path="/c/tasks"
+          component={Tasks}
           selectTab={selectTab}
         />
         <PrivateRoute

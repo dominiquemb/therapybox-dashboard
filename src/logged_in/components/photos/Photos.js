@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import { Grid, Box, isWidthUp, withWidth, withStyles, Link, Typography, Card, CardContent, CardHeader } from "@material-ui/core";
@@ -46,6 +46,13 @@ const fileDropStyles = {
       backgroundColor: 'transparent',
     },
 }
+
+const PageTitle = withStyles({
+    root: {
+        color: '#ffffff',
+        fontWeight: 400,
+    }
+})(Typography)
 
 const CustomCard = withStyles({
     root: {
@@ -178,6 +185,7 @@ class Photos extends PureComponent {
     const { classes } = this.props;
     return (
         <div className={classes.homeWrapper}>
+            <PageTitle variant="h2" align="center">Photos</PageTitle>
             <Box
                 display="flex"
                 justifyContent="center"
@@ -198,8 +206,6 @@ Photos.propTypes = {
   selectTab: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   width: PropTypes.string.isRequired,
-  userid: PropTypes.string.isRequired,
-  images: PropTypes.object.isRequired,
 };
 
 export default withWidth()(withStyles(styles, { withTheme: true })(Photos));

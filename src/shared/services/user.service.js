@@ -8,6 +8,8 @@ const userService = {
     getImages,
     getTasks,
     addImages,
+    addTask,
+    updateTask,
 };
 
 function getAll() {
@@ -45,6 +47,34 @@ function addImages({ id, images }) {
     };
 
     return fetch(`${config.apiUrl}/users/${id}/images`, requestOptions)
+        .then(handleResponse)
+        .then(images => {
+            return images;
+        });
+}
+
+function addTask({ id, task }) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, task })
+    };
+
+    return fetch(`${config.apiUrl}/users/${id}/task`, requestOptions)
+        .then(handleResponse)
+        .then(images => {
+            return images;
+        });
+}
+
+function updateTask({ id, task }) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, task })
+    };
+
+    return fetch(`${config.apiUrl}/users/${id}/task/${task.id}`, requestOptions)
         .then(handleResponse)
         .then(images => {
             return images;

@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { Grid, Box, isWidthUp, withWidth, withStyles, Link, Typography, Card, CardContent, CardHeader } from "@material-ui/core";
+import { TextField, Checkbox, Grid, Box, isWidthUp, withWidth, withStyles, Link, Typography, Card, CardContent, CardHeader } from "@material-ui/core";
 import { geolocated } from "react-geolocated";
 import Geocode from "react-geocode";
 import authenticationService from '../../../shared/services/authentication.service';
@@ -81,6 +81,42 @@ const CustomCardHeader = withStyles({
     }
 })(CardHeader);
 
+const TaskNumber = withStyles({
+  root: {
+      color: '#ffffff',
+      fontSize: 16,
+      paddingTop: 9,
+  }
+})(Typography);
+
+const CustomTextField = withStyles({
+  root: {
+    display: 'flex-inline',
+    flexGrow: 1,
+    margin: 'auto',
+    '& input': {
+      color: '#ffffff',
+    },
+    '& label': {
+      color: '#ffffff',
+    },
+    '& .MuiInput-underline:before': {
+        borderBottom: '2px solid white',
+    },
+    '&:hover': {
+      '& .MuiInput-underline:before': {
+        borderBottom: '2px solid white',
+      },
+    },
+  },
+})(TextField);
+
+const CustomCheckbox = withStyles({
+  root: {
+    display: 'flex-inline',
+  },
+})(Checkbox);
+
 class Home extends PureComponent {
   state = {
     currentUser: authenticationService.currentUserValue,
@@ -88,6 +124,7 @@ class Home extends PureComponent {
     images: [],
     imagePreviews: [],
     tasks: [],
+    taskPreviews: [],
     widgets: [
         {
             id: 'weather',
@@ -139,7 +176,11 @@ class Home extends PureComponent {
       let imagePreviews = imagesCopy.splice(0,4);
       this.setState({ images, imagePreviews });
     });
-    userService.getTasks(currentUser.id).then(tasks => this.setState({ tasks }));
+    userService.getTasks(currentUser.id).then(tasks => {
+      let tasksCopy = tasks.slice();
+      let taskPreviews = tasksCopy.splice(0,3);
+      this.setState({ tasks, taskPreviews });
+    });
   }
 
   getPhotosWidget = () => {
@@ -156,8 +197,66 @@ class Home extends PureComponent {
           </PhotoCard>
         </Grid>
         ))}
+        { !imagePreviews.length && (
+          <Grid key="no-photos" item xs={12} sm={6}>
+            <span>
+              No images to show. Click here to add some.
+            </span>
+          </Grid>
+        )}
       </Grid>
     );
+  }
+
+  getTaskRows = () => {
+    const { taskPreviews } = this.state;
+    const gridRows = [];
+    taskPreviews.forEach((task, index) => {
+        gridRows.push(
+            <Grid key={task.id} item xs={12}>
+                <Box display="flex" mb={3}>
+                    <TaskNumber variant="body1">{index+1}.&nbsp;</TaskNumber>
+                    <CustomTextField
+                        required
+                        fullWidth
+                        disabled
+                        id={task.id}
+                        value={task.description}
+                        name={task.id}
+                    />
+                    <CustomCheckbox
+                        color="secondary"
+                        disabled
+                        checked={task.completed}
+                        inputProps={{ 'aria-label': 'completion status' }}
+                    />
+                </Box>
+            </Grid>
+        );
+    });
+    return gridRows.map((element, index) => (
+      <Grid key={index} item xs={12}>
+        {element}
+      </Grid>
+    ));
+  };
+
+  getTasksWidget = () => {
+    const { tasks } = this.state;
+    return (
+      <div class="tasks-container">
+        <Grid container spacing={3}>
+            {this.getTaskRows()}
+            { !tasks.length && 
+              <Grid key="no-tasks" item xs={12} sm={6}>
+                <span>
+                  No tasks to show. Click here to add some.
+                </span>
+              </Grid>
+            }
+        </Grid>
+      </div>
+    )
   }
 
   getWeatherWidget = () => {
@@ -221,6 +320,9 @@ class Home extends PureComponent {
             break;
         case 'photos':
             html = this.getPhotosWidget();
+            break;
+        case 'tasks':
+            html = this.getTasksWidget();
             break;
         default: 
             html = '';
