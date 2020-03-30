@@ -92,7 +92,7 @@ const TaskNumber = withStyles({
 
 const CustomTextField = withStyles({
   root: {
-    display: 'flex-inline',
+    display: 'inline-flex',
     flexGrow: 1,
     margin: 'auto',
     '& input': {
@@ -114,7 +114,7 @@ const CustomTextField = withStyles({
 
 const CustomCheckbox = withStyles({
   root: {
-    display: 'flex-inline',
+    display: 'inline-flex',
   },
 })(Checkbox);
 
@@ -127,6 +127,7 @@ class Home extends PureComponent {
     tasks: [],
     taskPreviews: [],
     clothes: [],
+    sports: false,
     widgets: [
         {
             id: 'weather',
@@ -173,6 +174,7 @@ class Home extends PureComponent {
 
     userService.getById(currentUser.id).then(userFromApi => this.setState({ userFromApi }));
     userService.getClothes(currentUser.id).then(clothes => this.setState({ clothes }));
+    userService.getSportsNews(currentUser.id).then(sports => this.setState({ sports }));
     userService.getImages(currentUser.id).then(images => {
       let imagesCopy = images.slice();
       let imagePreviews = imagesCopy.splice(0,4);
@@ -187,7 +189,6 @@ class Home extends PureComponent {
 
   getClothesWidget = () => {
     const { clothes } = this.state;
-    console.log(clothes);
     return (
       <PieChart
         animate={true}
@@ -285,10 +286,20 @@ class Home extends PureComponent {
     ));
   };
 
+  getSportsWidget = () => {
+    const { sports } = this.state;
+    return (
+      <Card>
+        <CardHeader title={sports.headline} />
+        <CardContent>{sports.summary}</CardContent>
+      </Card>
+    );
+  }
+
   getTasksWidget = () => {
     const { tasks } = this.state;
     return (
-      <div class="tasks-container">
+      <div className="tasks-container">
         <Grid container spacing={3}>
             {this.getTaskRows()}
             { !tasks.length && 
@@ -311,7 +322,6 @@ class Home extends PureComponent {
         location = window.navigator.geolocation
     }
     if (location){
-        console.log(location);
         location.getCurrentPosition(function (position) {
             latitude = position.coords.latitude;
             longitude= position.coords.longitude;
@@ -370,6 +380,9 @@ class Home extends PureComponent {
             break;
         case 'clothes':
             html = this.getClothesWidget();
+            break;
+        case 'sport':
+            html = this.getSportsWidget();
             break;
         default: 
             html = '';

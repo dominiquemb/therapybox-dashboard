@@ -50,7 +50,7 @@ const PageTitle = withStyles({
 
 const CustomTextField = withStyles({
     root: {
-      display: 'flex-inline',
+      display: 'inline-flex',
       flexGrow: 1,
       margin: 'auto',
       '& input': {
@@ -72,7 +72,7 @@ const CustomTextField = withStyles({
 
 const CustomCheckbox = withStyles({
   root: {
-    display: 'flex-inline',
+    display: 'inline-flex',
   },
 })(Checkbox);
 

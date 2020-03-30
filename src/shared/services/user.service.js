@@ -11,6 +11,8 @@ const userService = {
     addTask,
     updateTask,
     getClothes,
+    getSportsNews,
+    getLosingTeams,
 };
 
 function getAll() {
@@ -84,6 +86,32 @@ function updateTask({ id, task }) {
         .then(handleResponse)
         .then(images => {
             return images;
+        });
+}
+
+function getSportsNews() {
+    const requestOptions = {
+        method: 'GET',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+    };
+
+    return fetch(`${config.apiUrl}/dashboard/sportsnews`, requestOptions)
+        .then(handleResponse)
+        .then(sportsnews => {
+            return sportsnews;
+        });
+}
+
+function getLosingTeams(winningTeam) {
+    const requestOptions = {
+        method: 'GET',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+    };
+
+    return fetch(`${config.apiUrl}/dashboard/sportslosers?team=${winningTeam}`, requestOptions)
+        .then(handleResponse)
+        .then(teams => {
+            return teams;
         });
 }
 

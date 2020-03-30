@@ -8,6 +8,9 @@ const tabMetadata = {
     "Tasks": {
         title: "Tasks",
     },
+    "Sport": {
+        title: "Champion's League Challenge",
+    },
 };
 
 export default tabMetadata;

@@ -2,9 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
-import Home from "./home/Home.js";
+import Home from "./home/Home";
 import Photos from "./photos/Photos";
 import Tasks from "./tasks/Tasks";
+import Sport from "./sport/Sport";
 import PrivateRoute from "../../shared/components/PrivateRoute";
 
 const styles = theme => ({
@@ -63,6 +64,11 @@ function Routing(props) {
         <PrivateRoute
           path="/c/tasks"
           component={Tasks}
+          selectTab={selectTab}
+        />
+        <PrivateRoute
+          path="/c/sport"
+          component={Sport}
           selectTab={selectTab}
         />
         <PrivateRoute
