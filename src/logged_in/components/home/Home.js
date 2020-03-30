@@ -245,7 +245,7 @@ class Home extends PureComponent {
         </Grid>
         ))}
         { !imagePreviews.length && (
-          <Grid key="no-photos" item xs={12} sm={6}>
+          <Grid key="no-photos" item xs={12}>
             <span>
               No images to show. Click here to add some.
             </span>
@@ -315,7 +315,7 @@ class Home extends PureComponent {
         <Grid container spacing={3}>
             {this.getTaskRows()}
             { !tasks.length && 
-              <Grid key="no-tasks" item xs={12} sm={6}>
+              <Grid key="no-tasks" item xs={12}>
                 <span>
                   No tasks to show. Click here to add some.
                 </span>
