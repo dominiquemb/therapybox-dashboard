@@ -10,6 +10,7 @@ const userService = {
     addImages,
     addTask,
     updateTask,
+    getClothes,
 };
 
 function getAll() {
@@ -30,6 +31,11 @@ function getImages(id) {
 function getTasks(id) {
     const requestOptions = { method: 'GET', headers: authHeader() };
     return fetch(`${config.apiUrl}/users/${id}/tasks`, requestOptions).then(handleResponse);
+}
+
+function getClothes(id) {
+    const requestOptions = { method: 'GET', headers: authHeader() };
+    return fetch(`${config.apiUrl}/dashboard/${id}/clothes`, requestOptions).then(handleResponse);
 }
 
 function addImages({ id, images }) {

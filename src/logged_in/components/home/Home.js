@@ -6,6 +6,7 @@ import { geolocated } from "react-geolocated";
 import Geocode from "react-geocode";
 import authenticationService from '../../../shared/services/authentication.service';
 import userService from '../../../shared/services/user.service';
+import PieChart from 'react-minimal-pie-chart';
 
 //import BlogCard from "./BlogCard";
 
@@ -125,6 +126,7 @@ class Home extends PureComponent {
     imagePreviews: [],
     tasks: [],
     taskPreviews: [],
+    clothes: [],
     widgets: [
         {
             id: 'weather',
@@ -159,7 +161,6 @@ class Home extends PureComponent {
             id: 'clothes',
             title: 'Clothes',
             api: '',
-            expandedUrl: '/clothes',
         },
     ],
   };
@@ -171,6 +172,7 @@ class Home extends PureComponent {
     selectTab('Home');
 
     userService.getById(currentUser.id).then(userFromApi => this.setState({ userFromApi }));
+    userService.getClothes(currentUser.id).then(clothes => this.setState({ clothes }));
     userService.getImages(currentUser.id).then(images => {
       let imagesCopy = images.slice();
       let imagePreviews = imagesCopy.splice(0,4);
@@ -181,6 +183,48 @@ class Home extends PureComponent {
       let taskPreviews = tasksCopy.splice(0,3);
       this.setState({ tasks, taskPreviews });
     });
+  }
+
+  getClothesWidget = () => {
+    const { clothes } = this.state;
+    console.log(clothes);
+    return (
+      <PieChart
+        animate={true}
+        animationDuration={500}
+        animationEasing="ease-out"
+        cx={50}
+        cy={50}
+        data={clothes}
+        label={(item) => {
+          const { dataIndex, data } = item;
+          const itemDetails = data[dataIndex];
+          let { title, percentage } = itemDetails;
+          title = title[0].toUpperCase() + title.substring(1);
+          percentage = percentage.toFixed();
+          return `${title} ${percentage}%`;
+        }}
+        labelPosition={50}
+        labelStyle={{
+          fontFamily: 'sans-serif',
+          fontSize: '3px',
+          fill: '#000000',
+        }}
+        lengthAngle={360}
+        lineWidth={100}
+        onClick={undefined}
+        onMouseOut={undefined}
+        onMouseOver={undefined}
+        paddingAngle={0}
+        radius={42}
+        rounded={false}
+        startAngle={0}
+        viewBoxSize={[
+          100,
+          100
+        ]}
+      />
+    );
   }
 
   getPhotosWidget = () => {
@@ -316,13 +360,16 @@ class Home extends PureComponent {
             html = this.getWeatherWidget();
             break;
         case 'news': 
-            html = 'News';
+            html = '';
             break;
         case 'photos':
             html = this.getPhotosWidget();
             break;
         case 'tasks':
             html = this.getTasksWidget();
+            break;
+        case 'clothes':
+            html = this.getClothesWidget();
             break;
         default: 
             html = '';
