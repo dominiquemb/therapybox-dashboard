@@ -13,6 +13,7 @@ const userService = {
     getClothes,
     getSportsNews,
     getLosingTeams,
+    getNews,
 };
 
 function getAll() {
@@ -114,5 +115,19 @@ function getLosingTeams(winningTeam) {
             return teams;
         });
 }
+
+function getNews() {
+    const requestOptions = {
+        method: 'GET',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+    };
+
+    return fetch(`${config.apiUrl}/dashboard/news`, requestOptions)
+        .then(handleResponse)
+        .then(news => {
+            return news;
+        });
+}
+
 
 export default userService;

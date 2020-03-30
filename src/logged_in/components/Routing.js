@@ -6,6 +6,7 @@ import Home from "./home/Home";
 import Photos from "./photos/Photos";
 import Tasks from "./tasks/Tasks";
 import Sport from "./sport/Sport";
+import News from "./news/News";
 import PrivateRoute from "../../shared/components/PrivateRoute";
 
 const styles = theme => ({
@@ -69,6 +70,11 @@ function Routing(props) {
         <PrivateRoute
           path="/c/sport"
           component={Sport}
+          selectTab={selectTab}
+        />
+        <PrivateRoute
+          path="/c/news"
+          component={News}
           selectTab={selectTab}
         />
         <PrivateRoute

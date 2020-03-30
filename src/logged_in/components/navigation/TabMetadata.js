@@ -11,6 +11,9 @@ const tabMetadata = {
     "Sport": {
         title: "Champion's League Challenge",
     },
+    "News": {
+        title: "News",
+    },
 };
 
 export default tabMetadata;

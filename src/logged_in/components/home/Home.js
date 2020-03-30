@@ -127,6 +127,7 @@ class Home extends PureComponent {
     tasks: [],
     taskPreviews: [],
     clothes: [],
+    news: {},
     sports: false,
     widgets: [
         {
@@ -174,7 +175,8 @@ class Home extends PureComponent {
 
     userService.getById(currentUser.id).then(userFromApi => this.setState({ userFromApi }));
     userService.getClothes(currentUser.id).then(clothes => this.setState({ clothes }));
-    userService.getSportsNews(currentUser.id).then(sports => this.setState({ sports }));
+    userService.getSportsNews().then(sports => this.setState({ sports }));
+    userService.getNews().then(news => this.setState({ news }));
     userService.getImages(currentUser.id).then(images => {
       let imagesCopy = images.slice();
       let imagePreviews = imagesCopy.splice(0,4);
@@ -296,6 +298,16 @@ class Home extends PureComponent {
     );
   }
 
+  getNewsWidget = () => {
+    const { news } = this.state;
+    return (
+      <Card>
+        <CardHeader title={news.title} />
+        <CardContent>{news.description}</CardContent>
+      </Card>
+    );
+  }
+
   getTasksWidget = () => {
     const { tasks } = this.state;
     return (
@@ -370,7 +382,7 @@ class Home extends PureComponent {
             html = this.getWeatherWidget();
             break;
         case 'news': 
-            html = '';
+            html = this.getNewsWidget();
             break;
         case 'photos':
             html = this.getPhotosWidget();

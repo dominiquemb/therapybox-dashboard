@@ -133,6 +133,7 @@ class Sport extends PureComponent {
                                 <CustomTextField
                                     required
                                     id="query"
+                                    placeholder="Input winning team name"
                                     inputRef={node => {
                                         this.query = node;
                                     }}
